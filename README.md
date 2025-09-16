@@ -1,12 +1,14 @@
 
-# Ajustar sexo cadastrado incorretamente em uma tabela de cliente no SQL Server
+# Corrigir sexo cadastrado incorretamente em clientes no SQL Server
 
-A ideia do projeto é que a partir de nomes iguais com sexos diferentes, é inferido o sexo correto daquele nome.
+Este projeto apresenta uma forma de corrigir inconsistências no campo "Sexo" da tabela de clientes no SQL Server, inferindo o valor correto a partir da maioria dos registros com o mesmo primeiro nome.
 
 
 Há um tempo atrás tive um problema no banco de dados em uma empresa: vários clientes tinham sido cadastrados com o sexo incorretamente e só descobriram muito tempo depois.
 
-Ex: Márcio como sexo "F" quando deveria ser "M", Maria com sexo "M" quando deveria ser "F" e assim por diante
+Exemplo:  
+- "Márcio" cadastrado 10 vezes → 8 vezes como "M" e 2 como "F".  
+- O algoritmo ajusta os registros destoantes para "M".  
 
 A primeira ideia para resolver o problema foi buscar um banco de nomes com seus respectivos sexos na Internet para substituir os erros mas não encontrei.
 
@@ -20,11 +22,18 @@ Assim, criei um script SQL Server que:
 
 1) Cria a tabela Cliente (opcional se já existir no seu banco de dados)
 2) Inclui registros de testes (opcional se já existirem registros na tabela Cliente)
-3) O script começa com uma CTE (Common Table Expression) chamada cteSexo para facilitar a leitura humana. Esta CTE separa o primeiro nome do segundo nome, terceiro... porque é o que interessa. A partir daí agrupa por nome e ocorrências por sexo, retornando os registros que estariam incoerentes.
-No caso dos registros de testes que usei, os dados a serem alterados seriam:
-## Screenshots
+3) Uso de uma CTE (Common Table Expression) chamada cteSexo que:
+* Extrai o primeiro nome dos clientes.
+* Conta ocorrências de cada sexo.
+* Identifica registros incoerentes.
 
-4) O Update é feito somente nos registros a serem ajustados
+No caso dos registros de testes que usei, os dados a serem alterados seriam:
+
+![Exemplo de registros incoerentes](telas/exemplos.png)
+
+Neste caso, foi identificado que existe uma Carolina com ID 52 que está com sexo "M" quando deveria ser "F" e Bruno com ID 54 com sexo "F" quando deveria ser "M"
+
+5) O Update é feito somente nos registros a serem ajustados
 
 ## Script
 
@@ -160,4 +169,6 @@ cliente.idcliente = tmp.idcliente
 	a1.novosexo is not null)
 Select * from cteSexo;
 ````
+
+Os testes foram executados no SQL Server 2016 e o desempenho ficou muito bom mesmo se houver milhares de registros
 
