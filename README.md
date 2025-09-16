@@ -22,18 +22,13 @@ Assim, criei um script SQL Server que:
 2) Inclui registros de testes (opcional se já existirem registros na tabela Cliente)
 3) O script começa com uma CTE (Common Table Expression) chamada cteSexo para facilitar a leitura humana. Esta CTE separa o primeiro nome do segundo nome, terceiro... porque é o que interessa. A partir daí agrupa por nome e ocorrências por sexo, retornando os registros que estariam incoerentes.
 No caso dos registros de testes que usei, os dados a serem alterados seriam:
+## Screenshots
 
 4) O Update é feito somente nos registros a serem ajustados
 
+## Script
 
-## Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
-
-## Running Tests
-
-To run tests, run the following command
+Para executar, use o seguinte código
 
 ```sql
   /* 
@@ -142,5 +137,27 @@ where
 cliente.idcliente = tmp.idcliente
 -- commit -> se quiser confirmar, descomente (apague o "--")
 -- rollback -> se quiser desprezar as alterações (apague o "--")
-```
+````
+
+## Ou caso queira testar antes de aplicar (recomendável) execute:
+````sql
+;with cteSexo as
+	(select *
+	from
+	(select idcliente,nome,sexo,
+	substring(a.nome,1,charindex(' ',nome)) as primeiroNome,
+	(select top 1 sexo
+	from
+	cliente tmp
+	where
+	upper(substring(tmp.nome,1,charindex(' ',tmp.nome))) = upper(substring(a.nome,1,charindex(' ',a.nome)))
+	group by upper(substring(a.nome,1,charindex(' ',nome))), sexo
+	order by upper(substring(a.nome,1,charindex(' ',nome))),count(1) desc
+	) as novoSexo
+	from cliente a) a1
+	where
+	a1.sexo <> a1.novosexo and
+	a1.novosexo is not null)
+Select * from cteSexo;
+````
 
