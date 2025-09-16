@@ -129,7 +129,8 @@ begin transaction
 	from
 	cliente tmp
 	where
-	upper(substring(tmp.nome,1,charindex(' ',tmp.nome))) = upper(substring(a.nome,1,charindex(' ',a.nome)))
+	upper(substring(tmp.nome,1,charindex(' ',tmp.nome))) =
+    upper(substring(a.nome,1,charindex(' ',a.nome)))
 	group by upper(substring(a.nome,1,charindex(' ',nome))), sexo
 	order by upper(substring(a.nome,1,charindex(' ',nome))),count(1) desc
 	) as novoSexo
@@ -159,7 +160,8 @@ cliente.idcliente = tmp.idcliente
 	from
 	cliente tmp
 	where
-	upper(substring(tmp.nome,1,charindex(' ',tmp.nome))) = upper(substring(a.nome,1,charindex(' ',a.nome)))
+	upper(substring(tmp.nome,1,charindex(' ',tmp.nome))) =
+    upper(substring(a.nome,1,charindex(' ',a.nome)))
 	group by upper(substring(a.nome,1,charindex(' ',nome))), sexo
 	order by upper(substring(a.nome,1,charindex(' ',nome))),count(1) desc
 	) as novoSexo
